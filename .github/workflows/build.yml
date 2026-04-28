@@ -1,38 +1,41 @@
-name: Build Python EXE
+name: Build PySide6 EXE
 
 on:
   push:
-    branches: [ "main" ]  # Se activa al subir cambios a main
-  workflow_dispatch:      # Permite ejecutarlo manualmente
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - name: checkout repo content
+    - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: setup python
+    - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10' # Cambia esto a tu versión de Python
+        python-version: '3.10'
+        cache: 'pip' # Cache para acelerar futuras ejecuciones
 
-    - name: install dependencies
+    - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pyinstaller
+        pip install pyinstaller PySide6
         if (Test-Path requirements.txt) { pip install -r requirements.txt }
 
-    - name: build executable
+    - name: Build EXE with PyInstaller
       run: |
-        pyinstaller --onefile --windowed main.py
-        # --onefile: Empaqueta todo en un solo .exe
-        # --windowed: Evita que se abra una consola (quítalo si es una app de consola)
-        # main.py: Asegúrate de que este es el nombre de tu archivo principal
+        pyinstaller --onefile --windowed --noconfirm --clean `
+        --name "MiAplicacionGrafica" `
+        --add-data "venv/Lib/site-packages/PySide6/plugins;PySide6/plugins" `
+        main.py
+      # Nota: La línea --add-data es a veces necesaria en versiones antiguas, 
+      # pero las versiones modernas de PyInstaller suelen detectar PySide6 automáticamente.
 
-    - name: upload artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: python-executable
-        path: dist/main.exe
+        name: Windows-GUI-App
+        path: dist/MiAplicacionGrafica.exe
