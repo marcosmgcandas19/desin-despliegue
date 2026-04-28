@@ -1,4 +1,4 @@
-name: Build PySide6 EXE
+name: Build F1 Race EXE
 
 on:
   push:
@@ -17,25 +17,22 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-        cache: 'pip' # Cache para acelerar futuras ejecuciones
 
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller PySide6
-        if (Test-Path requirements.txt) { pip install -r requirements.txt }
 
     - name: Build EXE with PyInstaller
       run: |
         pyinstaller --onefile --windowed --noconfirm --clean `
-        --name "MiAplicacionGrafica" `
-        --add-data "venv/Lib/site-packages/PySide6/plugins;PySide6/plugins" `
+        --name "CarreraF1" `
         main.py
-      # Nota: La línea --add-data es a veces necesaria en versiones antiguas, 
-      # pero las versiones modernas de PyInstaller suelen detectar PySide6 automáticamente.
+      # IMPORTANTE: Cambia 'main.py' por el nombre del archivo 
+      # que contiene el bloque 'if __name__ == "__main__":'
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Windows-GUI-App
-        path: dist/MiAplicacionGrafica.exe
+        name: Carrera-F1-Windows
+        path: dist/CarreraF1.exe
